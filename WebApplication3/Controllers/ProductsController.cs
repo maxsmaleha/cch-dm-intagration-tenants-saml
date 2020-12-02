@@ -1,34 +1,62 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Web.Http;
+using System.Threading.Tasks;
 using System.Web.Mvc;
+using Aurigma.BackOffice;
+using WebApplication3.Models;
+using WebApplication3.ViewModels;
 
 namespace WebApplication3.Controllers
 {
     public class ProductsController : Controller
     {
-        // GET <controller>/5
-        public ActionResult Open(int id)
+        private readonly ITemplatesApiClient _templatesClient;
+        private readonly IEcommerceProductReferencesApiClient _productsReferencesClient;
+
+        public ProductsController(ITemplatesApiClient templatesClient, IEcommerceProductReferencesApiClient productsClient)
         {
-            return View(TestProducts.Products[id]);
+            _templatesClient = templatesClient;
+            _productsReferencesClient = productsClient;
         }
 
-        // POST api/<controller>
-        public void Post([FromBody]string value)
+        public async Task<ActionResult> Index()
         {
+            var templates = await _templatesClient.GetAllAsync();
+            var references = await _productsReferencesClient.GetAllAsync();
+
+            return View("Products", new ProductsViewModel
+            {
+                Products = TestProducts.Products,
+                Templates = templates.Items.OrderBy(x => x.Id).ToList(),
+                References = references.Items
+            });
         }
 
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody]string value)
+        public ActionResult Product(int id)
         {
+            return View(new ProductPageViewModel { Product = TestProducts.Products[id] });
         }
 
-        // DELETE api/<controller>/5
-        public void Delete(int id)
+        public async Task<ActionResult> Connect(ProductConnectTemplateViewModel model)
         {
+            var result = await _productsReferencesClient.CreateAsync(
+                model.ProductId.ToString(),
+                ecommerceSystemId: int.Parse(ConfigurationManager.AppSettings["BackOfficeEcommerceSystemId"]),
+                templateId: model.TemplateId);
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
+        public async Task<ActionResult> Disconnect(ProductConnectTemplateViewModel model)
+        {
+            var result = await _productsReferencesClient.DeleteAsync(
+                model.ProductId.ToString(),
+                ecommerceSystemId: int.Parse(ConfigurationManager.AppSettings["BackOfficeEcommerceSystemId"]),
+                templateId: model.TemplateId);
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
     }
 }

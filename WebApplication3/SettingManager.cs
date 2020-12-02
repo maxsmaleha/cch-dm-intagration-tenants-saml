@@ -13,14 +13,11 @@ namespace WebApplication3
 {
     public class SettingManager
     {
-
         private static SettingManager _instance;
         private static readonly object syncRoot = new object();
 
         public Saml2Configuration Configuration;
         public List<RelyingParty> RelyingParties;
-        public string TenancyName;
-
         public static void Init()
         {
 
@@ -32,7 +29,6 @@ namespace WebApplication3
 
                     _instance = new SettingManager
                     {
-                        TenancyName = ConfigurationManager.AppSettings["TenancyName"],
                         Configuration = new Saml2Configuration
                         {
                             Issuer = ConfigurationManager.AppSettings["Issuer"],
@@ -53,7 +49,7 @@ namespace WebApplication3
 
                     _instance.Configuration.AllowedAudienceUris.Add(ConfigurationManager.AppSettings["Issuer"]);
 
-                    _instance.RelyingParties.Add(new RelyingParty() { Metadata = ConfigurationManager.AppSettings["RelyingPartyMetadata"] });
+                    _instance.RelyingParties.Add(new RelyingParty() { Metadata = ConfigurationManager.AppSettings["RelyingPartyMetadata"] + ConfigurationManager.AppSettings["TenancyName"] });
                 }
             }
         }

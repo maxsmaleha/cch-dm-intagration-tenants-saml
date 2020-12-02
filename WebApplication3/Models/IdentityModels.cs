@@ -21,6 +21,7 @@ namespace WebApplication3.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<ProjectDbModel> Projects { get; set; }
+        //public DbSet<ProductConnectTemplateModel> ProductTemplateConnects { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

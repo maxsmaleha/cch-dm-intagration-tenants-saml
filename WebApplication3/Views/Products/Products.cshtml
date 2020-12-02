@@ -1,0 +1,80 @@
+﻿@model WebApplication3.Models.ProductsViewModel
+
+@{ ViewData["Title"] = "Products"; }
+
+<h1 class="display-4">View Products</h1>
+<p class="lead">This section mocks a DocketManager product catalogue. </p>
+<p>The same list of products is passed to the BackOffice through the API (see <code>ProductController</code>). You can check it by navigating to the Templates section, trying to create a Template and connect it to a DocketManager product.</p>
+
+<div class="row">
+    @foreach (var item in Model.Products)
+    {
+<hr />
+                <div class="col mt-3">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top" src="@item.Image" alt="@item.Type" style="max-width: 200px; max-height: 200px;">
+                        <div class="card-body">
+                            @Html.ActionLink(item.Name, "Product", "Products", new { id = item.Id }, null)
+                            <p class="card-text">
+                                @Html.DisplayNameFor(model => item.Id) = @item.Id<br />
+                                @Html.DisplayNameFor(model => item.Type) = @item.Type<br />
+                            </p>
+                        </div>
+
+                        <div>
+                            Template from BackOffice:
+
+                            @{ var selectedValue = 0;
+                                                var reference = Model.References.FirstOrDefault(x => x.EcommerceProductId == item.Id);
+                                                if (reference != null)
+                                                {
+                                                    selectedValue = reference.TemplateId;
+                                                } }
+
+                            @Html.DropDownList("template_" + item.Id,
+                                     new SelectList(Model.Templates,
+                                         "id", "name", selectedValue), "Select Template")
+                            <button onclick="connectTemplate(@item.Id)">Connect template</button>
+                            <button onclick="disconnectTemplate(@item.Id)">Disconnect template</button>
+                        </div>
+                    </div>
+                </div>}
+</div>
+
+<script>
+    async function post(url, data) {
+        return await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+    }
+
+    async function connectTemplate(productId) {
+        var templateId = document.querySelector("#template_" + productId).value;
+        var data = { productId, templateId };
+        var response = await post("/products/connect", data);
+        var status = response.status;
+        if (status === 200) {
+            alert("Product successfully connected with template");
+        } else {
+            alert("Something wrong");
+        }
+    }
+
+    async function disconnectTemplate(productId) {
+        var selector = document.querySelector("#template_" + productId);
+        var templateId = selector.value;
+        var data = { productId, templateId };
+        var response = await post("/products/disconnect", data);
+        var status = response.status;
+        if (status === 200) {
+            alert("Product successfully disconnected from template");
+            selector.value = 0;
+        } else {
+            alert("Something wrong");
+        }
+    }
+</script>

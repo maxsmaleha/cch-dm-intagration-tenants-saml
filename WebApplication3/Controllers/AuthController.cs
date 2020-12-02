@@ -143,7 +143,7 @@ namespace WebApplication3.Controllers
                     if (string.IsNullOrEmpty(rp.Issuer))
                     {
                         var entityDescriptor = new EntityDescriptor();
-                        entityDescriptor.ReadSPSsoDescriptorFromUrl(new Uri(rp.Metadata + SettingManager.GetInstance().TenancyName));
+                        entityDescriptor.ReadSPSsoDescriptorFromUrl(new Uri(rp.Metadata));
                         if (entityDescriptor.SPSsoDescriptor != null)
                         {
                             rp.Issuer = entityDescriptor.EntityId;
