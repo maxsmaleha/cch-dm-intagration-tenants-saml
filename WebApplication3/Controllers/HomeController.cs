@@ -29,7 +29,7 @@ namespace WebApplication3.Controllers
         {
             var model = new BackOfficeViewModel
             {
-                LoginUrl = $"{ConfigurationManager.AppSettings["BackOfficeFrontendUrl"]}account/login/docket-manager-saml"
+                LoginUrl = $"{ConfigurationManager.AppSettings["BackOfficeFrontendUrl"]}account/login/saml/" + SettingManager.GetInstance().TenancyName
             };
 
             return View("BackOffice", model);

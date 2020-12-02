@@ -19,6 +19,7 @@ namespace WebApplication3
 
         public Saml2Configuration Configuration;
         public List<RelyingParty> RelyingParties;
+        public string TenancyName;
 
         public static void Init()
         {
@@ -31,14 +32,16 @@ namespace WebApplication3
 
                     _instance = new SettingManager
                     {
+                        TenancyName = ConfigurationManager.AppSettings["TenancyName"],
                         Configuration = new Saml2Configuration
                         {
                             Issuer = ConfigurationManager.AppSettings["Issuer"],
                             SingleSignOnDestination = new Uri(ConfigurationManager.AppSettings["SingleSignOnDestination"]),
                             SingleLogoutDestination = new Uri(ConfigurationManager.AppSettings["SingleLogoutDestination"]),
                             SignatureAlgorithm = ConfigurationManager.AppSettings["SignatureAlgorithm"],
-                            SigningCertificate = CertificateUtil.Load(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["SigningCertificateFile"]), ConfigurationManager.AppSettings["SigningCertificatePassword"],
-                                X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable),
+                            SigningCertificate = CertificateUtil.Load(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["SigningCertificateFile"]), ConfigurationManager.AppSettings["SigningCertificatePassword"]),
+                            // uncomment this for azure
+                            // X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable),
 
                             CertificateValidationMode = (X509CertificateValidationMode)Enum.Parse(typeof(X509CertificateValidationMode), ConfigurationManager.AppSettings["CertificateValidationMode"]),
                             RevocationMode = (X509RevocationMode)Enum.Parse(typeof(X509RevocationMode), ConfigurationManager.AppSettings["RevocationMode"]),

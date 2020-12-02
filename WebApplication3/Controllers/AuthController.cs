@@ -40,22 +40,20 @@ namespace WebApplication3.Controllers
                 var sessionIndex = Guid.NewGuid().ToString();
 
                 var claims = new List<Claim> {
-                    new Claim(ClaimTypes.NameIdentifier, User.Identity.Name),
+                    new Claim(ClaimTypes.NameIdentifier, User.Identity.GetUserId()),
                     new Claim(ClaimTypes.Name, User.Identity.Name),
                     new Claim(ClaimTypes.Email, User.Identity.Name),
-                    new Claim("tenancyName", "docketManager"),
-                    new Claim("userRole", "admin"),
-                    new Claim("userId", User.Identity.GetUserId()),
+                    new Claim(ClaimTypes.Role, "admin"),
                 };
 
-                return LoginResponse(saml2AuthnRequest.Id, Saml2StatusCodes.Success, requestBinding.RelayState, relyingParty, sessionIndex, claims);
+                return LoginResponse(saml2AuthnRequest, Saml2StatusCodes.Success, requestBinding.RelayState, relyingParty, sessionIndex, claims);
             }
             catch (Exception exc)
             {
 #if DEBUG
                 Console.WriteLine($"Saml 2.0 Authn Request error: {exc.ToString()}\nSaml Auth Request: '{saml2AuthnRequest.XmlDocument?.OuterXml}'\nQuery String: {Request.QueryString}");
 #endif
-                return LoginResponse(saml2AuthnRequest.Id, Saml2StatusCodes.Responder, requestBinding.RelayState, relyingParty);
+                return LoginResponse(saml2AuthnRequest, Saml2StatusCodes.Responder, requestBinding.RelayState, relyingParty);
             }
         }
 
@@ -94,16 +92,17 @@ namespace WebApplication3.Controllers
             return binding.ReadSamlRequest(Request.ToGenericHttpRequest(), new Saml2LogoutRequest(config))?.Issuer;
         }
 
-        private ActionResult LoginResponse(Saml2Id inResponseTo, Saml2StatusCodes status, string relayState, RelyingParty relyingParty, string sessionIndex = null, IEnumerable<Claim> claims = null)
+        private ActionResult LoginResponse(Saml2AuthnRequest saml2AuthnRequest, Saml2StatusCodes status, string relayState, RelyingParty relyingParty, string sessionIndex = null, IEnumerable<Claim> claims = null)
         {
             var responsebinding = new Saml2RedirectBinding();
             responsebinding.RelayState = relayState;
 
             var saml2AuthnResponse = new Saml2AuthnResponse(config)
             {
-                InResponseTo = inResponseTo,
+                InResponseTo = saml2AuthnRequest.Id,
                 Status = status,
                 Destination = relyingParty.SingleSignOnDestination,
+                Extensions = saml2AuthnRequest.Extensions
             };
             if (status == Saml2StatusCodes.Success && claims != null)
             {
@@ -144,7 +143,7 @@ namespace WebApplication3.Controllers
                     if (string.IsNullOrEmpty(rp.Issuer))
                     {
                         var entityDescriptor = new EntityDescriptor();
-                        entityDescriptor.ReadSPSsoDescriptorFromUrl(new Uri(rp.Metadata));
+                        entityDescriptor.ReadSPSsoDescriptorFromUrl(new Uri(rp.Metadata + SettingManager.GetInstance().TenancyName));
                         if (entityDescriptor.SPSsoDescriptor != null)
                         {
                             rp.Issuer = entityDescriptor.EntityId;
