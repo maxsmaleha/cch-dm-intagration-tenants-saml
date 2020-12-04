@@ -46,8 +46,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Aurigma.BackOffice.ApiClient, Version=2.2.103.7989, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Aurigma.BackOffice.ApiClient.2.2.103.7989\lib\netstandard2.0\Aurigma.BackOffice.ApiClient.dll</HintPath>
+    <Reference Include="Aurigma.BackOffice.ApiClient, Version=2.2.118.8013, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Aurigma.BackOffice.ApiClient.2.2.118.8013\lib\netstandard2.0\Aurigma.BackOffice.ApiClient.dll</HintPath>
     </Reference>
     <Reference Include="Autofac, Version=6.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.6.0.0\lib\netstandard2.0\Autofac.dll</HintPath>

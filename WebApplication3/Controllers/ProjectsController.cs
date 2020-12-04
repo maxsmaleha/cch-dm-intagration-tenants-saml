@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using Aurigma.BackOffice;
+using Newtonsoft.Json;
 using WebApplication3.Models;
 
 namespace WebApplication3.Controllers
@@ -38,14 +39,30 @@ namespace WebApplication3.Controllers
         }
 
         /// <summary>
+        /// Get project preview url
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        public async Task<string> GetPreviewUrl(int projectId)
+        {
+            var project = await _projectsClient.GetAsync(projectId);
+            var product = project.Products.First();
+            var imageUrl = JsonConvert.DeserializeObject<HiddenData>(product.Hidden.ToString()).Images[0];
+            return imageUrl;
+        }
+
+        /// <summary>
         /// Get project pdf url.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="projectId"></param>
         /// <returns></returns>
-        public async Task<string> GetPdfUrl(int id)
+        public async Task<string> GetPdfUrl(int projectId)
         {
-            // todo return project pdf url
-            return null;
+            var project = await _projectsClient.GetAsync(projectId);
+            var product = project.Products.First();
+            var result = await _projectsClient.GetProjectPdfUrlAsync(projectId, product.UserId,
+                JsonConvert.DeserializeObject<List<string>>(product.StateId.ToString()).First());
+            return result.Url;
         }
 
         /// <summary>

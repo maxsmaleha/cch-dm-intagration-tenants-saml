@@ -4,27 +4,37 @@
     ViewBag.Title = "Projects";
 }
 
+<style>
+    img.project-preview {
+        border: 1px solid black;
+    }
+</style>
 <h2>Projects</h2>
 <div>
     @foreach (var item in Model)
     {
-        <hr/>
+        <hr />
         <div>
+            <img id="preview-@item.Id" class="project-preview" style="max-width: 200px; max-height: 200px;" />
+            <script>
+                (async () => {
+                    const response = await fetch('/projects/GetPreviewUrl?projectId=' + @item.Id);
+                    const data = await response.text();
+                    document.querySelector("img#preview-@item.Id").src = data;
+                })()
+            </script>
             <div>Status: @item.Status.DisplayName</div>
             <div>CreationTime: @item.CreationTime</div>
             <div>
-                @foreach (var product in item.Products)
-                {
-                    if (product.Hidden != null)
+                @{
+                    var product = item.Products.First();
+                    var hiddenDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(product.Hidden.ToString());
+                    if (hiddenDict.ContainsKey("PdfUrl"))
                     {
-                        var hiddenDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(product.Hidden.ToString());
-                        if (hiddenDict.ContainsKey("pdfUrl"))
-                        {
-                            var url = hiddenDict["pdfUrl"];
-                            <div>
-                                <button onClick="download('@url')">Download</button>
-                            </div>
-                        }
+                        var url = hiddenDict["PdfUrl"];
+                        <div>
+                            <button onClick="download('@item.Id')">Download</button>
+                        </div>
                     }
                 }
             </div>
@@ -32,13 +42,13 @@
     }
 </div>
 <script>
-    async function download(url) {
-        const response = await fetch(url);
-        const data = await response.json();
-        downloadFile(data, "file.pdf");    
+    async function download(projectId) {
+        const response = await fetch('/projects/GetPdfUrl?projectId=' + projectId);
+        const data = await response.text();
+        downloadFile(data, "file.pdf");
     }
 
-   function downloadFile(url, fileName) {
+    function downloadFile(url, fileName) {
         const link = document.createElement('a');
         link.style.position = 'absolute';
         link.style.top = '-99999999';
