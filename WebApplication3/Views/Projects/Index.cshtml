@@ -1,0 +1,54 @@
+﻿@using Newtonsoft.Json
+@model List<Aurigma.BackOffice.ProjectDetailedDto>
+@{
+    ViewBag.Title = "Projects";
+}
+
+<h2>Projects</h2>
+<div>
+    @foreach (var item in Model)
+    {
+        <hr/>
+        <div>
+            <div>Status: @item.Status.DisplayName</div>
+            <div>CreationTime: @item.CreationTime</div>
+            <div>
+                @foreach (var product in item.Products)
+                {
+                    if (product.Hidden != null)
+                    {
+                        var hiddenDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(product.Hidden.ToString());
+                        if (hiddenDict.ContainsKey("pdfUrl"))
+                        {
+                            var url = hiddenDict["pdfUrl"];
+                            <div>
+                                <button onClick="download('@url')">Download</button>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>
+<script>
+    async function download(url) {
+        const response = await fetch(url);
+        const data = await response.json();
+        downloadFile(data, "file.pdf");    
+    }
+
+   function downloadFile(url, fileName) {
+        const link = document.createElement('a');
+        link.style.position = 'absolute';
+        link.style.top = '-99999999';
+        link.style.left = '-9999999';
+        link.style.visibility = 'hidden';
+        link.target = '_blank';
+        link.download = fileName;
+        link.href = url + "?t=" + Date.now();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>

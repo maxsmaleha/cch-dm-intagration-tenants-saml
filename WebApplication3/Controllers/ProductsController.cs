@@ -1,5 +1,4 @@
-﻿using System;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -15,7 +14,8 @@ namespace WebApplication3.Controllers
         private readonly ITemplatesApiClient _templatesClient;
         private readonly IEcommerceProductReferencesApiClient _productsReferencesClient;
 
-        public ProductsController(ITemplatesApiClient templatesClient, IEcommerceProductReferencesApiClient productsClient)
+        public ProductsController(ITemplatesApiClient templatesClient,
+            IEcommerceProductReferencesApiClient productsClient)
         {
             _templatesClient = templatesClient;
             _productsReferencesClient = productsClient;
@@ -23,7 +23,9 @@ namespace WebApplication3.Controllers
 
         public async Task<ActionResult> Index()
         {
+            // get templates from BackOffice
             var templates = await _templatesClient.GetAllAsync();
+            // get product-template references
             var references = await _productsReferencesClient.GetAllAsync();
 
             return View("Products", new ProductsViewModel
@@ -36,9 +38,14 @@ namespace WebApplication3.Controllers
 
         public ActionResult Product(int id)
         {
-            return View(new ProductPageViewModel { Product = TestProducts.Products[id] });
+            return View(new ProductPageViewModel {Product = TestProducts.Products[id]});
         }
 
+        /// <summary>
+        /// Create reference between product in this app with template in BackOffice
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public async Task<ActionResult> Connect(ProductConnectTemplateViewModel model)
         {
             var result = await _productsReferencesClient.CreateAsync(
@@ -49,6 +56,11 @@ namespace WebApplication3.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
+        /// <summary>
+        /// Delete reference between product in this app with template in BackOffice
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public async Task<ActionResult> Disconnect(ProductConnectTemplateViewModel model)
         {
             var result = await _productsReferencesClient.DeleteAsync(

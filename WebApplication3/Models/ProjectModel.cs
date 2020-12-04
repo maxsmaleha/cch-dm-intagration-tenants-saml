@@ -8,7 +8,7 @@ namespace WebApplication3.Models
     public class ProjectModel
     {
         public long Id { get; set; }
-
+        public int ProductId { get; set; }
         public string UserId { get; set; }
         public List<LineItem> LineItems { get; set; }
     }
@@ -16,11 +16,13 @@ namespace WebApplication3.Models
     public class ProjectDbModel
     {
         public long Id { get; set; }
-
         public string UserId { get; set; }
         public string LineItems { get; set; }
     }
 
+    /// <summary>
+    /// Line item is 1 item from cart. In real ecommerce system order contains from 1 or more line items.
+    /// </summary>
     public class LineItem
     {
         public string Key { get; set; }
@@ -41,5 +43,7 @@ namespace WebApplication3.Models
         public List<string> Images { get; set; }
 
         public List<string> DownloadUrls { get; set; }
+
+        public string PdfUrl { get; set; }
     }
 }

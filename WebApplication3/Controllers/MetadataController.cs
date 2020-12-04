@@ -27,10 +27,6 @@ namespace WebApplication3.Controllers
                 {
                     config.SigningCertificate
                 },
-                //EncryptionCertificates = new X509Certificate2[]
-                //{
-                //    config.DecryptionCertificate
-                //},
                 SingleSignOnServices = new SingleSignOnService[]
                 {
                     new SingleSignOnService { Binding = ProtocolBindings.HttpRedirect, Location = config.SingleSignOnDestination }

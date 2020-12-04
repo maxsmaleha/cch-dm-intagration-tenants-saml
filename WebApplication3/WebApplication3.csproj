@@ -240,8 +240,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MetadataController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
-    <Compile Include="Controllers\ProjectsApiController.cs" />
-    <Compile Include="Filters\CookiesFilterAttribute.cs" />
+    <Compile Include="Controllers\ProjectsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -307,7 +306,6 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\popper.min.js" />
     <Content Include="Scripts\storefront.docket.js" />
-    <Content Include="Scripts\storefront.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -345,6 +343,7 @@
     <Content Include="Views\Home\BackOffice.cshtml" />
     <Content Include="Views\Products\Product.cshtml" />
     <Content Include="Views\Products\Products.cshtml" />
+    <Content Include="Views\Projects\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\fonts\" />
