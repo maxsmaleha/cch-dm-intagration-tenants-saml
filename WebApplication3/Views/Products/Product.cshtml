@@ -37,7 +37,7 @@
 
     <!-- Integration code -->
     <script>
-       
+
         const urlArr =  window.location.href.split("/");
         const productId = Number(urlArr[urlArr.length -1]);
 
@@ -45,7 +45,7 @@
             const editorContainer = $('#editor')[0];
             const userId = "@usrId";
             const tenantId = "@ConfigurationManager.AppSettings["TenantId"]";
-            
+
             // start initialize editor
             const uifEditor = new Aurigma.UIFrameworkEditor({
                 container: editorContainer,
@@ -67,10 +67,10 @@
             });
 
             Aurigma.driver = await uifEditor.create(false);
-            
-            // this function will be called when customer press `Finish` button. 
+
+            // this function will be called when customer press `Finish` button.
             // In real ecommerce system first data is added to the cart.
-            // In this sample we skip this step and right away create project.  
+            // In this sample we skip this step and right away create project.
             uifEditor.addProjectHandler(async (project) => {
                 await fetch('/projects/create', {
                     method: 'POST',
@@ -81,7 +81,7 @@
                     referrerPolicy: 'no-referrer',
                     body: JSON.stringify(project)
                 });
-                
+
                 alert("Project created!");
             });
 
@@ -93,143 +93,118 @@
     </script>
 </head>
 <body>
-<nav class="navbar sticky-top navbar-expand-lg">
-    <div class="container">
-        <button class="navbar-brand home btn">Ecommerce Demo Page</button>
-        <ul class="navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">
-                    <img src="~/Content/img/profile.svg">
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <img src="~/Content/img/favorite.svg">
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <img src="~/Content/img/cart.svg">
-                </a>
-            </li>
-        </ul>
-    </div>
-</nav>
+    <nav class="navbar sticky-top navbar-expand-lg">
+        <div class="container">
+            <button class="navbar-brand home btn">Ecommerce Demo Page</button>
+            <ul class="navbar-nav">
+            </ul>
+        </div>
+    </nav>
 
-<div class="container" id="store-content">
-    <div class="row">
-        <!-- Left Column -->
-        <div class="col">
-            <div id="demoCarousel" class="carousel slide" data-ride="carousel">
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img src="@Model.Product.Image" alt="First slide">
+    <div class="container" id="store-content">
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col">
+                <div id="demoCarousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="@Model.Product.Image" alt="First slide">
+                        </div>
                     </div>
+                    <ol class="carousel-indicators">
+                    </ol>
                 </div>
-                <ol class="carousel-indicators">
-                </ol>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">@Html.ActionLink("Home", "Index", "Home")</li>
+                        <li class="breadcrumb-item">@Html.ActionLink("Products", "Index", "Products")</li>
+                        <li class="breadcrumb-item active" aria-current="page">Product <span>@Model.Product.Name</span></li>
+                    </ol>
+                </nav>
+                <h5>SKU <span class="sku-holder">@Model.Product.Sku</span></h5>
+                <h2>@Model.Product.Name</h2>
+                <h4>Price: @Model.Product.Price</h4>
+                <form>
+                    <div class="form-group">
+                        <label for="quantity-group">Quantity</label>
+                        <div  class="input-group">
+                            <input type="text" class="form-control" id="quantity-group" value="1" disabled>
+                        </div>
+                    </div>
+                    <button id="customize-button" type="button" class="btn btn-primary btn-lg" disabled>Customize</button>
+                </form>
             </div>
         </div>
+    </div>
 
-        <!-- Right Column -->
-        <div class="col">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li class="breadcrumb-item">@Html.ActionLink("Products", "Index", "Products")</li>
-                    <li class="breadcrumb-item active" aria-current="page">Product <span>@Model.Product.Name</span></li>
-                </ol>
-            </nav>
-            <h5>SKU <span class="sku-holder">@Model.Product.Sku</span></h5>
-            <h2>@Model.Product.Name</h2>
-            <h4>Price: @Model.Product.Price</h4>
-            <form>
-                <div class="form-group">
-                    <label for="quantity-group">Quantity</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">
-                                <div class="minus"></div>
+    <div class="container" id="editor-container" hidden>
+        <div class="editor-header">
+            <button id="back-button" class="btn">Back</button>
+            <h2>Customize Product name</h2>
+        </div>
+        <div id="editor"></div>
+    </div>
+
+    <div class="container" id="cart-content" hidden>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#">Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Cart</li>
+            </ol>
+        </nav>
+        <h2>Your cart</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="column-product">Product</th>
+                    <th class="column-price">Price</th>
+                    <th class="column-quantity">Quantity</th>
+                    <th class="column-total">Total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="column-product">
+                        <div class="column-product-content">
+                            <div class="product-image-placeholder"></div>
+                            <div class="product-description">
+                                <div class="product-name">Product name</div>
+                                <div id="properties">
+                                    <div class="product-property">Envelope type: Blank envelopes</div>
+                                    <div class="product-property">Color: Cream</div>
+                                </div>
                             </div>
                         </div>
-                        <input type="text" class="form-control" id="quantity-group" value="1" disabled>
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <div class="plus"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button id="customize-button" type="button" class="btn btn-primary btn-lg" disabled>Customize</button>
-            </form>
+                    </td>
+                    <td class="column-price">$2.55</td>
+                    <td class="column-quantity">25</td>
+                    <td class="column-total">$63.75</td>
+                    <td class="column-actions">
+                        <a href="#" target="_blank" id="download-button-link">
+                            <button id="download-button" class="btn"></button>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="cart-footer">
+            <div class="total">
+                <div class="total-label">Subtotal:</div>
+                <div class="total-value">$63.75</div>
+            </div>
+            <div class="total-hint">Shipping & taxes calculated at checkout</div>
+            <div class="buttons">
+                <button class="btn btn-primary home">Continue shopping</button>
+                <button class="btn" disabled>Check out</button>
+            </div>
         </div>
     </div>
-</div>
-
-<div class="container" id="editor-container" hidden>
-    <div class="editor-header">
-        <button id="back-button" class="btn">Back</button>
-        <h2>Customize Product name</h2>
-    </div>
-    <div id="editor"></div>
-</div>
-
-<div class="container" id="cart-content" hidden>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="#">Home</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Cart</li>
-        </ol>
-    </nav>
-    <h2>Your cart</h2>
-    <table class="table">
-        <thead>
-        <tr>
-            <th class="column-product">Product</th>
-            <th class="column-price">Price</th>
-            <th class="column-quantity">Quantity</th>
-            <th class="column-total">Total</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td class="column-product">
-                <div class="column-product-content">
-                    <div class="product-image-placeholder"></div>
-                    <div class="product-description">
-                        <div class="product-name">Product name</div>
-                        <div id="properties">
-                            <div class="product-property">Envelope type: Blank envelopes</div>
-                            <div class="product-property">Color: Cream</div>
-                        </div>
-                    </div>
-                </div>
-            </td>
-            <td class="column-price">$2.55</td>
-            <td class="column-quantity">25</td>
-            <td class="column-total">$63.75</td>
-            <td class="column-actions">
-                <a href="#" target="_blank" id="download-button-link">
-                    <button id="download-button" class="btn"></button>
-                </a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <div class="cart-footer">
-        <div class="total">
-            <div class="total-label">Subtotal:</div>
-            <div class="total-value">$63.75</div>
-        </div>
-        <div class="total-hint">Shipping & taxes calculated at checkout</div>
-        <div class="buttons">
-            <button class="btn btn-primary home">Continue shopping</button>
-            <button class="btn" disabled>Check out</button>
-        </div>
-    </div>
-</div>
 </body>
 </html>

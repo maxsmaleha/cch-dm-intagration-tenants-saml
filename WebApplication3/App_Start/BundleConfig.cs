@@ -35,8 +35,10 @@ namespace WebApplication3
                       "~/Scripts/storefront.docket.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
-                      "~/Content/site.css"));
+                "~/Content/bootstrap.css",
+                "~/Content/bootstrap-theme.css",
+                "~/Content/styles.css",
+                "~/Content/site.css"));
 
             bundles.Add(new StyleBundle("~/Content/Product.css").Include(
                       "~/Content/bootstrap.css",
