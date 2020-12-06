@@ -1,4 +1,5 @@
 using System.Configuration;
+using System.Data.Entity;
 using System.Net.Http;
 using System.Reflection;
 using System.Web.Http;
@@ -9,6 +10,7 @@ using Aurigma.BackOffice;
 using Autofac;
 using Autofac.Integration.Mvc;
 using WebApplication3.Auth;
+using WebApplication3.Models;
 using WebApplication3.Services;
 
 namespace WebApplication3
@@ -17,6 +19,9 @@ namespace WebApplication3
     {
         protected void Application_Start()
         {
+            // automatic migrations
+            //Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, WebApplication3.Migrations.Configuration>());
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 
