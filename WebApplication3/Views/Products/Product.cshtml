@@ -39,12 +39,25 @@
     <script>
 
         const urlArr =  window.location.href.split("/");
-        const productId = Number(urlArr[urlArr.length -1]);
+        const productId = Number(urlArr[urlArr.length - 1]);
+        const getQueryParams = function () {
+            let qs = window.location.search.substring(1).split('&');
+            let qsPairs = {};
+            qs.forEach(x => {
+                let kvPair = x.split('=');
+                qsPairs[kvPair[0]] = kvPair[1];
+            });
+            return qsPairs;
+        }
 
         document.addEventListener('DOMContentLoaded', async () => {
             const editorContainer = $('#editor')[0];
             const userId = "@usrId";
             const tenantId = "@ConfigurationManager.AppSettings["TenantId"]";
+            var qsPairs = getQueryParams();
+            if (!!qsPairs['snapshot']) {
+                switchToPage(1);
+            }
 
             // start initialize editor
             const uifEditor = new Aurigma.UIFrameworkEditor({
@@ -72,7 +85,9 @@
             // In real ecommerce system first data is added to the cart.
             // In this sample we skip this step and right away create project.
             uifEditor.addProjectHandler(async (project) => {
-                await fetch('/projects/create', {
+                var qsPairs = getQueryParams();
+                var fetchUrl = !!qsPairs['snapshot'] ? '/projects/update' : '/projects/create';
+                await fetch(fetchUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

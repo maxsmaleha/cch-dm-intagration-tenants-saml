@@ -1,5 +1,5 @@
 ﻿@using Newtonsoft.Json
-@model List<Aurigma.BackOffice.ProjectDetailedDto>
+@model List<WebApplication3.Models.EcommerceProjectModel>
 @{
     ViewBag.Title = "Projects";
 }
@@ -15,25 +15,34 @@
     {
         <hr />
         <div>
-            <img id="preview-@item.Id" class="project-preview" style="max-width: 200px; max-height: 200px;" />
+            <img id="preview-@item.Project.Id" class="project-preview" style="max-width: 200px; max-height: 200px;" />
             <script>
                 (async () => {
-                    const response = await fetch('/projects/GetPreviewUrl?projectId=' + @item.Id);
+                    const response = await fetch('/projects/GetPreviewUrl?projectId=' + @item.Project.Id);
                     const data = await response.text();
-                    document.querySelector("img#preview-@item.Id").src = data;
+                    document.querySelector("img#preview-@item.Project.Id").src = data;
                 })()
             </script>
-            <div>Status: @item.Status.DisplayName</div>
-            <div>CreationTime: @item.CreationTime</div>
+            <div>Status: @item.Project.Status.DisplayName</div>
+            <div>CreationTime: @item.Project.CreationTime</div>
             <div>
                 @{
-                    var product = item.Products.First();
+                    var product = item.Project.Products.First();
                     var hiddenDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(product.Hidden.ToString());
                     if (hiddenDict.ContainsKey("PdfUrl"))
                     {
                         var url = hiddenDict["PdfUrl"];
                         <div>
-                            <button onClick="download('@item.Id')">Download</button>
+                            <button onClick="download('@item.Project.Id')">Download</button>
+                        </div>
+                    }
+                    if (hiddenDict.ContainsKey("Snapshot"))
+                    {
+                        var snapshot = hiddenDict["Snapshot"];
+                        var key = product.Key;
+                        var editUrl = $"/Products/Product/{item.EcommerceProduct.Id}?key={item.Project.Id}&snapshot={snapshot}";
+                        <div>
+                            <a href="@editUrl" target="_blank">Edit</a>
                         </div>
                     }
                 }

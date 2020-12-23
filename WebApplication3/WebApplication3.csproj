@@ -248,9 +248,9 @@
     <Compile Include="Migrations\202009110547359_InitialCreate.Designer.cs">
       <DependentUpon>202009110547359_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202011260755202_ChangeDataStructure.cs" />
-    <Compile Include="Migrations\202011260755202_ChangeDataStructure.Designer.cs">
-      <DependentUpon>202011260755202_ChangeDataStructure.cs</DependentUpon>
+    <Compile Include="Migrations\202012230756237_ChangeDataStructure.cs" />
+    <Compile Include="Migrations\202012230756237_ChangeDataStructure.Designer.cs">
+      <DependentUpon>202012230756237_ChangeDataStructure.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ViewModels\AccountViewModels.cs" />
@@ -385,8 +385,8 @@
     <EmbeddedResource Include="Migrations\202009110547359_InitialCreate.resx">
       <DependentUpon>202009110547359_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202011260755202_ChangeDataStructure.resx">
-      <DependentUpon>202011260755202_ChangeDataStructure.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202012230756237_ChangeDataStructure.resx">
+      <DependentUpon>202012230756237_ChangeDataStructure.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
