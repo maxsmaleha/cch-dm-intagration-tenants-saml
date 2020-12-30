@@ -34,11 +34,16 @@ Aurigma.DocketManagerService = class {
         .map(value => Number(value))
 
 
+    /**
+     * Add function to handle project
+     * @param {Function} func - function to handle project
+     */
     addProjectHandler(func) {
         this._projectHandlers.push(func);
     }
 
     /**
+     * Execute backoffice project handlers
      * @param {UIFrameworkEditor} editor - UIFramework editor definition
      */
     addEditorExitHandler(editor) {
@@ -47,9 +52,10 @@ Aurigma.DocketManagerService = class {
             editor.driver.orders.current.props['hidden']['pdfUrl'] =
                 Aurigma.ensureEndsWith(this.backofficeUrl, "/") + "api/services/app/Project/GetProjectPdfUrl" +
                 "?stateId=" + editor.driver.orders.current.props['stateId'] + "&userId=" + editor.driver.orders.current.props['userId'];
-
+            const returnData = this.getBackToEditorData().orNull();
             const project = {
                 productId: editor.driver.products.current.id,
+                projectId: returnData != null ? returnData.key : null,
                 userId: editor.driver.orders.current.props["userId"],
                 lineItems: [
                     Object.assign({
@@ -111,7 +117,7 @@ Aurigma.DocketManagerService = class {
         const doc = new Aurigma.DocumentService(document);
         const cookies = doc.getCookies();
         return `docket_${cookies["docket_manager_session_guid"] ||
-        Aurigma.Guid()}`;
+            Aurigma.Guid()}`;
     }
 
     /**

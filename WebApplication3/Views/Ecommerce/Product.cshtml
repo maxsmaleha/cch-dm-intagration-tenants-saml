@@ -68,8 +68,9 @@
             // In real ecommerce system first data is added to the cart.
             // In this sample we skip this step and right away create project.
             uifEditor.addProjectHandler(async (project) => {
-                var qsPairs = getQueryParams();
-                var fetchUrl = !!qsPairs['snapshot'] ? '/projects/update' : '/projects/create';
+                //var qsPairs = getQueryParams();
+                //var fetchUrl = !!qsPairs['snapshot'] ? '/projects/update' : '/projects/create';
+                var fetchUrl = '/projects/create';
                 await fetch(fetchUrl, {
                     method: 'POST',
                     headers: {
