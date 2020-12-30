@@ -1,0 +1,114 @@
+﻿@model WebApplication3.Models.ProductsViewModel
+@using System.Configuration
+@using Microsoft.AspNet.Identity;
+@using Newtonsoft.Json;
+@{
+    Layout = "../../Views/Shared/_EcommerceLayout.cshtml";
+    /*var usrId = HttpContext.Current.User.Identity.IsAuthenticated
+        ? HttpContext.Current.User.Identity.GetUserId()
+        : HttpContext.Current.Response.Cookies["docket_manager_session_guid"].Value;*/
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+</head>
+<body>
+    <div class="container" id="collection-content" hidden>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/">Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Ecommerce</li>
+            </ol>
+        </nav>
+        <h2>Products</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="column-product">Product</th>
+                    <th class="column-product" style="text-align:center">Backoffice Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Products)
+                {
+                    <tr>
+                        <td class="column-product">
+                            <div class="column-product-content">
+                                <div class="product-image-placeholder">
+                                    <img src="@item.Image" alt="@item.Type" style="max-width: 90px; max-height: 90px;">
+                                </div>
+                                <div class="product-description">
+                                    <div class="product-name">@Html.ActionLink(item.Name, "Product", "Ecommerce", new { id = item.Id }, null)</div>
+                                    <div id="properties">
+                                        <div class="product-property">Type: @item.Type</div>
+                                        <div class="product-property">Price: @item.Price</div>
+                                        <div class="product-property">SKU: @item.Sku</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="column-actions">
+                            @{
+                                var selectedValue = 0;
+                                var reference = Model.References.FirstOrDefault(x => x.EcommerceProductId == item.Id);
+                                if (reference != null)
+                                {
+                                    selectedValue = reference.TemplateId;
+                                }
+                            }
+
+                            @Html.DropDownList("template_" + item.Id,
+                                new SelectList(Model.Templates,
+                                    "id", "name", selectedValue), "Select Template")
+                            <button onclick="connectTemplate(@item.Id)">Connect template</button>
+                            <button onclick="disconnectTemplate(@item.Id)">Disconnect template</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <script>
+        async function post(url, data) {
+        return await fetch(url, {
+        method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+    }
+
+    async function connectTemplate(productId) {
+        var templateId = document.querySelector("#template_" + productId).value;
+        var data = { productId, templateId };
+        var response = await post("/products/connect", data);
+        var status = response.status;
+        if (status === 200) {
+            alert("Product successfully connected with template");
+        } else {
+            alert("Something went wrong :(");
+        }
+    }
+
+    async function disconnectTemplate(productId) {
+        var selector = document.querySelector("#template_" + productId);
+        var templateId = selector.value;
+        var data = { productId, templateId };
+        var response = await post("/products/disconnect", data);
+        var status = response.status;
+        if (status === 200) {
+            alert("Product successfully disconnected from template");
+            selector.value = 0;
+        } else {
+            alert("Something went wrong :(");
+        }
+    }
+    </script>
+</body>
+</html>

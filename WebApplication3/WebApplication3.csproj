@@ -236,11 +236,13 @@
     <Compile Include="Auth\CustomApiClientConfiguration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\EcommerceController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MetadataController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
+    <Compile Include="Filters\CookiesFilterAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -253,6 +255,7 @@
       <DependentUpon>202012230756237_ChangeDataStructure.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Services\UserService.cs" />
     <Compile Include="ViewModels\AccountViewModels.cs" />
     <Compile Include="ViewModels\BackOfficeViewModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -306,6 +309,9 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="App_Data\key.pfx" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\docket-manager-service.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -356,6 +362,11 @@
     <Content Include="Views\Products\Product.cshtml" />
     <Content Include="Views\Products\Products.cshtml" />
     <Content Include="Views\Projects\Index.cshtml" />
+    <Content Include="Views\Projects\Edit.cshtml" />
+    <Content Include="Views\Ecommerce\Product.cshtml" />
+    <Content Include="Views\Ecommerce\Collection.cshtml" />
+    <Content Include="Views\Ecommerce\Cart.cshtml" />
+    <Content Include="Views\Shared\_EcommerceLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\fonts\" />

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Configuration;
+using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
@@ -9,6 +11,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using WebApplication3.Models;
+using WebApplication3.Services;
 
 namespace WebApplication3.Controllers
 {
@@ -17,12 +20,13 @@ namespace WebApplication3.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private UserService _userService;
 
         public AccountController()
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, UserService userService)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -79,6 +83,7 @@ namespace WebApplication3.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    await MergeUsers(model.Email);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -156,7 +161,8 @@ namespace WebApplication3.Controllers
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    await MergeUsers(model.Email);
+
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -424,6 +430,37 @@ namespace WebApplication3.Controllers
         }
 
         #region Helpers
+
+        private async Task MergeUsers(string customerEmail)
+        {
+            var ecommercePreffix = ConfigurationManager.AppSettings["EcommerceUserIdPreffix"];
+            var user = await UserManager.FindByEmailAsync(customerEmail);
+            var userId = ecommercePreffix + "_" + Request.Cookies["docket_manager_session_guid"].Value;
+            using (var db = ApplicationDbContext.Create())
+            {
+                var projects = await db.Projects.Where(x => x.UserId == userId).ToListAsync();
+                if (projects.Count != 0)
+                {
+                    var onLoginModel = new OnLoginModel()
+                    {
+                        EcommerceDomain = ConfigurationManager.AppSettings["EcommerceUserIdPreffix"],
+                        Email = user.Email,
+                        FirstName = user.UserName,
+                        Id = user.Id,
+                        UserGuid = Request.Cookies["docket_manager_session_guid"].Value,
+                        Origin = ConfigurationManager.AppSettings["AppUrl"]
+                    };
+                    _userService = new UserService();
+                    await _userService.MergeUsers(onLoginModel);
+                    foreach (var project in projects)
+                    {
+                        project.UserId = ecommercePreffix + "_" + user.Id;
+                    }
+                    await db.SaveChangesAsync();
+                }
+            }
+        }
+
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 

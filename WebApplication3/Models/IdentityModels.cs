@@ -18,6 +18,17 @@ namespace WebApplication3.Models
         }
     }
 
+    public class OnLoginModel
+    {
+        public string Id { get; set; }
+        public string Email { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string UserGuid { get; set; }
+        public string EcommerceDomain { get; set; }
+        public string Origin { get; set; }
+    }
+
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<ProjectDbModel> Projects { get; set; }
