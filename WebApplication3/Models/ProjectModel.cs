@@ -8,6 +8,7 @@ namespace WebApplication3.Models
     public class ProjectModel
     {
         public long Id { get; set; }
+        // ProjectId from BackOffice
         public int ProductId { get; set; }
         public int? ProjectId { get; set; }
         public string UserId { get; set; }

@@ -28,17 +28,10 @@ namespace WebApplication3.Controllers
         /// <returns></returns>
         public async Task<ActionResult> Connect(ProductConnectTemplateViewModel model)
         {
-            try
-            {
-                var result = await _productsReferencesClient.CreateAsync(
-                    model.ProductId.ToString(),
-                    ecommerceSystemId: int.Parse(ConfigurationManager.AppSettings["BackOfficeEcommerceSystemId"]),
-                    templateId: model.TemplateId);
-            }
-            catch (System.Exception e)
-            {
-                var e1 = e;
-            }
+            var result = await _productsReferencesClient.CreateAsync(
+                model.ProductId.ToString(),
+                ecommerceSystemId: int.Parse(ConfigurationManager.AppSettings["BackOfficeEcommerceSystemId"]),
+                templateId: model.TemplateId);
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }

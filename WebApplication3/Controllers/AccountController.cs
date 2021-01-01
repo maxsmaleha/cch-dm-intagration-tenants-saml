@@ -431,6 +431,10 @@ namespace WebApplication3.Controllers
 
         #region Helpers
 
+        /**
+         * When the user create the design (add order item in cart) as a guest, and then he login or register,
+         * we need to merge his guest data into the user's data
+         */
         private async Task MergeUsers(string customerEmail)
         {
             var ecommercePreffix = ConfigurationManager.AppSettings["EcommerceUserIdPreffix"];
