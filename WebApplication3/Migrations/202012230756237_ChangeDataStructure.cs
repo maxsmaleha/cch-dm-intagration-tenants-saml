@@ -13,7 +13,8 @@ namespace WebApplication3.Migrations
                     {
                         Id = c.Long(nullable: false, identity: true),
                         UserId = c.String(),
-                        LineItems = c.String(),
+                        ProjectId = c.Int(nullable: false),
+                        ProductId = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
             

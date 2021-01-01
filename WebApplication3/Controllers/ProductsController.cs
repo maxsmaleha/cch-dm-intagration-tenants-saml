@@ -21,26 +21,6 @@ namespace WebApplication3.Controllers
             _productsReferencesClient = productsClient;
         }
 
-        public async Task<ActionResult> Index()
-        {
-            // get templates from BackOffice
-            var templates = await _templatesClient.GetAllAsync();
-            // get product-template references
-            var references = await _productsReferencesClient.GetAllAsync();
-
-            return View("Products", new ProductsViewModel
-            {
-                Products = TestProducts.Products,
-                Templates = templates.Items.OrderBy(x => x.Id).ToList(),
-                References = references.Items
-            });
-        }
-
-        public ActionResult Product(int id)
-        {
-            return View(new ProductPageViewModel {Product = TestProducts.Products[id]});
-        }
-
         /// <summary>
         /// Create reference between product in this app with template in BackOffice
         /// </summary>

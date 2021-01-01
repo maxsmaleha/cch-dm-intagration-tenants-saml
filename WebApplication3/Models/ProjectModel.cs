@@ -8,7 +8,9 @@ namespace WebApplication3.Models
     public class ProjectModel
     {
         public long Id { get; set; }
+        // ProjectId from BackOffice
         public int ProductId { get; set; }
+        public int? ProjectId { get; set; }
         public string UserId { get; set; }
         public List<LineItem> LineItems { get; set; }
     }
@@ -17,7 +19,15 @@ namespace WebApplication3.Models
     {
         public long Id { get; set; }
         public string UserId { get; set; }
-        public string LineItems { get; set; }
+        public int ProjectId { get; set; }
+        public int ProductId { get; set; }
+    }
+
+    public class EcommerceProjectModel
+    {
+        public Aurigma.BackOffice.ProjectDetailedDto Project { get; set; }
+
+        public ProductModel EcommerceProduct { get; set; }
     }
 
     /// <summary>

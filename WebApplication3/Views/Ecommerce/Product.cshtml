@@ -1,0 +1,143 @@
+﻿@model WebApplication3.ViewModels.ProductPageViewModel
+@using System.Configuration
+@using Microsoft.AspNet.Identity;
+@using Newtonsoft.Json;
+@{
+    Layout = "../../Views/Shared/_EcommerceLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <!-- Utils -->
+    <script>const switchToPage = (num) => {
+            ["#store-content",
+                "#editor-container"]
+                .forEach((page, index) => index === num ? $(page).removeAttr("hidden") : $(page).attr("hidden", 1));
+        }</script>
+
+    <!-- Integration code -->
+    <script>
+
+        const urlArr =  window.location.href.split("/");
+        const productId = Number(urlArr[urlArr.length - 1]);
+        const getQueryParams = function () {
+            let qs = window.location.search.substring(1).split('&');
+            let qsPairs = {};
+            qs.forEach(x => {
+                let kvPair = x.split('=');
+                qsPairs[kvPair[0]] = kvPair[1];
+            });
+            return qsPairs;
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const editorContainer = $('#editor')[0];
+            const userId = getCookieValue('docket_manager_session_guid');
+            const tenantId = "@ConfigurationManager.AppSettings["TenantId"]";
+            var qsPairs = getQueryParams();
+            if (!!qsPairs['snapshot']) {
+                switchToPage(1);
+            }
+
+            // start initialize editor
+            const uifEditor = new Aurigma.UIFrameworkEditor({
+                container: editorContainer,
+                ecommerceService: new Aurigma.DocketManagerService({
+                    backofficeUrl: "@ConfigurationManager.AppSettings["BackOfficeBackendUrl"]",
+                    tenantId: tenantId,
+                    customerId: userId,
+                    customerSignature: "",
+                    shopName: "docket-manager",
+                    product: @Html.Raw(JsonConvert.SerializeObject(Model.Product, new JsonSerializerSettings
+                             {
+                                 ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver
+                                 {
+                                     NamingStrategy = new Newtonsoft.Json.Serialization.CamelCaseNamingStrategy()
+                                 },
+                                 Formatting = Formatting.Indented
+                             }))
+                })
+            });
+
+            Aurigma.driver = await uifEditor.create(false);
+
+            // this function will be called when customer press `Finish` button.
+            // In real ecommerce system first data is added to the cart.
+            // In this sample we skip this step and right away create project.
+            uifEditor.addProjectHandler(async (project) => {
+                //var qsPairs = getQueryParams();
+                //var fetchUrl = !!qsPairs['snapshot'] ? '/projects/update' : '/projects/create';
+                var fetchUrl = '/projects/create';
+                await fetch(fetchUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    redirect: 'follow',
+                    referrerPolicy: 'no-referrer',
+                    body: JSON.stringify(project)
+                });
+
+                alert("Project created!");
+            });
+
+            $("#customize-button").removeAttr("disabled");
+            $("#customize-button").click(() => switchToPage(1)); // editor
+            $("#back-button").click(() => switchToPage(0)); // home
+            $(".home").click(() => switchToPage(0)); // home
+        });
+    </script>
+</head>
+<body>
+    <div class="container" id="store-content">
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">@Html.ActionLink("Home", "Index", "Home")</li>
+                        <li class="breadcrumb-item">@Html.ActionLink("Products", "Index", "Ecommerce")</li>
+                        <li class="breadcrumb-item active" aria-current="page"><span>@Model.Product.Name</span></li>
+                    </ol>
+                </nav>
+                <div id="demoCarousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="@Model.Product.Image" alt="First slide">
+                        </div>
+                    </div>
+                    <ol class="carousel-indicators">
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col">
+                <h5>SKU <span class="sku-holder">@Model.Product.Sku</span></h5>
+                <h2>@Model.Product.Name</h2>
+                <h4>Price: @Model.Product.Price</h4>
+                <form>
+                    <div class="form-group">
+                        <label for="quantity-group">Quantity</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="quantity-group" value="1" disabled>
+                        </div>
+                    </div>
+                    <button id="customize-button" type="button" class="btn btn-primary btn-lg" disabled>Customize</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="editor-container" hidden>
+        <div class="editor-header">
+            <button id="back-button" class="btn">Back</button>
+            <h2>Customize Product name</h2>
+        </div>
+        <div id="editor"></div>
+    </div>
+</body>
+</html>

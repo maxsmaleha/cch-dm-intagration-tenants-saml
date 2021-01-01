@@ -1,0 +1,114 @@
+﻿@model List<WebApplication3.Models.EcommerceProjectModel>
+@using Microsoft.AspNet.Identity;
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "Ecommerce Cart";
+    Layout = "../../Views/Shared/_EcommerceLayout.cshtml";
+    /*var usrId = HttpContext.Current.User.Identity.IsAuthenticated
+        ? HttpContext.Current.User.Identity.GetUserId()
+        : HttpContext.Current.Response.Cookies["docket_manager_session_guid"].Value;*/
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+</head>
+<body>
+    <div class="container" id="cart-content" hidden>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">@Html.ActionLink("Home", "Index", "Home")</li>
+                <li class="breadcrumb-item">@Html.ActionLink("Ecommerce", "Index", "Ecommerce")</li>
+                <li class="breadcrumb-item active" aria-current="page">Cart</li>
+            </ol>
+        </nav>
+        <h2>Your cart</h2>
+        <table class="table">
+            <thead style="text-align: center">
+                <tr>
+                    <th class="column-product">Product</th>
+                    <th class="column-price">Price</th>
+                    <th class="column-quantity">Quantity</th>
+                    <th class="column-product" style="text-align:center">Actions</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="column-product">
+                            <div class="column-product-content">
+                                <div class="product-image-placeholder">
+                                    <img id="preview-@item.Project.Id" class="project-preview" style="max-width: 90px; max-height: 90px;" />
+                                    <script>
+                                        (async () => {
+                                            const response = await fetch('/projects/GetPreviewUrl?projectId=' + @item.Project.Id);
+                                            const data = await response.text();
+                                            document.querySelector("img#preview-@item.Project.Id").src = data;
+                                        })()
+                                    </script>
+                                </div>
+                                <div class="product-description">
+                                    <div class="product-name">@item.EcommerceProduct.Name</div>
+                                    <div id="properties">
+                                        <div class="product-property">Type: @item.EcommerceProduct.Type</div>
+                                        <div class="product-property">SKU: @item.EcommerceProduct.Sku</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="column-price">@item.EcommerceProduct.Price</td>
+                        <td class="column-quantity">@item.Project.Products.First().Quantity</td>
+                        <td class="column-actions">
+                            @{
+                                var product = item.Project.Products.First();
+                                var hiddenDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(product.Hidden.ToString());
+                                if (hiddenDict.ContainsKey("PdfUrl"))
+                                {
+                                    var url = hiddenDict["PdfUrl"];
+                                    <div style="margin-bottom: 8px">
+                                        <button onClick="download('@item.Project.Id')" style="width:6em">Download</button>
+                                    </div>
+                                }
+                                if (hiddenDict.ContainsKey("Snapshot"))
+                                {
+                                    var snapshot = hiddenDict["Snapshot"];
+                                    var key = product.Key;
+                                    var editUrl = $"/Ecommerce/Product/{item.EcommerceProduct.Id}?key={item.Project.Id}&snapshot={snapshot}";
+                                    <div style="margin-bottom: 8px">
+                                        <a href="@editUrl" target="_blank"><button style="width:6em">Edit</button></a>
+                                    </div>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+<script>
+    async function download(projectId) {
+        const response = await fetch('/projects/GetPdfUrl?projectId=' + projectId);
+        const data = await response.text();
+        downloadFile(data, "file.pdf");
+    }
+
+    function downloadFile(url, fileName) {
+        const link = document.createElement('a');
+        link.style.position = 'absolute';
+        link.style.top = '-99999999';
+        link.style.left = '-9999999';
+        link.style.visibility = 'hidden';
+        link.target = '_blank';
+        link.download = fileName;
+        link.href = url + "?t=" + Date.now();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+</html>
