@@ -52,10 +52,6 @@ namespace WebApplication3.Controllers
             return View(data);
         }
 
-        /// <summary>
-        /// Get detailed model of all projects
-        /// </summary>
-        /// <returns></returns>
         public async Task<ActionResult> Edit(int id)
         {
             var project = await _projectsClient.GetAsync(id);
