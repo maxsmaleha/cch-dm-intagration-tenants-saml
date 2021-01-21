@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 
 namespace WebApplication3.Models
 {
@@ -39,11 +36,12 @@ namespace WebApplication3.Models
 
         public int Quantity { get; set; }
 
-        public string UserId { get; set; }
+        public string _UserId { get; set; }
 
-        public List<string> StateId { get; set; }
+        public List<string> _StateId { get; set; }
 
-        public HiddenData Hidden { get; set; }
+        public HiddenData _Hidden { get; set; }
+        public Dictionary<string, object> _Fields { get; set; }
     }
 
     public class HiddenData

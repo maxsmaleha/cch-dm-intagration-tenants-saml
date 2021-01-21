@@ -48,14 +48,14 @@ Aurigma.DocketManagerService = class {
      */
     addEditorExitHandler(editor) {
         editor.driver.cart.onSubmitting.subscribe(async () => {
-            editor.driver.orders.current.props['hidden']['pdfUrl'] =
+            editor.driver.orders.current.props['_hidden']['pdfUrl'] =
                 Aurigma.ensureEndsWith(this.backofficeUrl, "/") + "api/services/app/Project/GetProjectPdfUrl" +
-                "?stateId=" + editor.driver.orders.current.props['stateId'] + "&userId=" + editor.driver.orders.current.props['userId'];
+                "?stateId=" + editor.driver.orders.current.props['_stateId'][0] + "&userId=" + editor.driver.orders.current.props['_userId'];
             const returnData = this.getBackToEditorData().orNull();
             const project = {
                 productId: editor.driver.products.current.id,
                 projectId: returnData != null ? returnData.key : null,
-                userId: editor.driver.orders.current.props["userId"],
+                userId: editor.driver.orders.current.props["_userId"],
                 lineItems: [
                     Object.assign({
                         key: Aurigma.Guid(),

@@ -105,12 +105,12 @@ namespace WebApplication3.Controllers
             var products = model.LineItems.Select(x =>
                 new ProjectProductParametersDto
                 {
-                    UserId = x.UserId,
-                    StateId = x.StateId,
+                    UserId = x._UserId,
+                    StateId = x._StateId,
                     Quantity = x.Quantity,
-                    Hidden = x.Hidden,
+                    Hidden = x._Hidden,
+                    Fields = x._Fields,
                     Key = x.Key,
-                    Fields = new Dictionary<string, object>()
                 }).ToList();
 
             var result = await _projectsClient.CreateAsync(body: new CreateProjectDto
@@ -123,14 +123,14 @@ namespace WebApplication3.Controllers
                 Products = products
             });
 
-            using (var db = ApplicationDbContext.Create()) 
+            using (var db = ApplicationDbContext.Create())
             {
                 db.Projects.Add(new ProjectDbModel()
-                 {
-                     ProductId = model.ProductId,
-                     ProjectId = result.Id,
-                     UserId = model.UserId
-                 });
+                {
+                    ProductId = model.ProductId,
+                    ProjectId = result.Id,
+                    UserId = model.UserId
+                });
                 await db.SaveChangesAsync();
             }
 
@@ -147,12 +147,12 @@ namespace WebApplication3.Controllers
             var products = model.LineItems.Select(x =>
                 new ProjectProductParametersDto
                 {
-                    UserId = x.UserId,
-                    StateId = x.StateId,
+                    UserId = x._UserId,
+                    StateId = x._StateId,
                     Quantity = x.Quantity,
-                    Hidden = x.Hidden,
-                    Key = x.Key,
-                    Fields = new Dictionary<string, object>()
+                    Hidden = x._Hidden,
+                    Fields = x._Fields,
+                    Key = x.Key
                 }).ToList();
 
             var result = model.ProjectId == null
